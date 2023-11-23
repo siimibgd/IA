@@ -1,0 +1,42 @@
+load wdbc.data
+
+caracteristi = wdbc(:, 3:4);
+date_antrenare=caracteristi(1:500,:);
+date_test=caracteristi(501:569,:);
+
+etichete =wdbc(:,2);
+etichete_antrenare=etichete(1:500,:);
+etichete_test=etichete(501:569,:);
+
+figure;
+gscatter(caracteristi(:,1),caracteristi(:,2),etichete,'rb','..')
+title('Plotare date in cluster');
+xlabel('Raza medie');
+ylabel('Textura medie');
+legend('Benign', 'Malign');
+
+clasifSVM=fitcsvm(date_antrenare,etichete_antrenare,'KernelFunction','linear','BoxConstraint',Inf,'ClassNames',[0,1]);
+
+figure;
+h(1:2)=gscatter(date_test(:,1),date_test(:,2),etichete_test,'kr','.');
+hold on
+
+% Afișare hiperplan
+w = clasifSVM.Beta;
+b = clasifSVM.Bias;
+x_hyperplan = [min(date_test(:,1)), max(date_test(:,1))];
+y_hyperplan = (-w(1)/w(2)) * x_hyperplan - b/w(2);
+plot(x_hyperplan, y_hyperplan, 'g', 'LineWidth', 2);
+title('SVM cu Kernel Liniar - Hiperplan');
+
+figure;
+h(1:2)=gscatter(date_antrenare(:,1),date_antrenare(:,2),etichete_antrenare,'kr','.');
+hold on
+
+% Afișare hiperplan
+w = clasifSVM.Beta;
+b = clasifSVM.Bias;
+x_hyperplan = [min(date_antrenare(:,1)), max(date_antrenare(:,1))];
+y_hyperplan = (-w(1)/w(2)) * x_hyperplan - b/w(2);
+plot(x_hyperplan, y_hyperplan, 'g', 'LineWidth', 2);
+title('SVM cu Kernel Liniar - Hiperplan');
